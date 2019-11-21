@@ -1,12 +1,11 @@
 import { md5 } from '@allex/md5'
-import { isPromise, merge, omit } from '@fdio/utils'
+import { isPromise, merge } from '@fdio/utils'
 import { EOL } from 'os'
 import { Options as TerserOptions, terser } from 'rollup-plugin-terser'
 
 const stderr = console.error.bind(console) // eslint-disable-line no-console
 
-export interface MinifyOptions {
-  terser: TerserOptions
+export interface MinifyOptions extends TerserOptions {
 }
 
 export const printMinifyError = (ex: any, code: string) => {
@@ -87,13 +86,9 @@ function genTerserOptions (o: TerserOptions) {
  *
  * @author Allex Wang (@allex_wang)
  */
-export const minify = function (options: MinifyOptions = { terser: {} }) {
+export const minify = function (options: MinifyOptions = {}) {
   // cherry-pick options for terser plugin
-  const terserOptions = {
-    ...genTerserOptions(options.terser),
-    ...omit(options, 'terser')
-  }
-
+  const terserOptions = genTerserOptions(options)
   const terserObj = terser(terserOptions)
   const renderChunk = terserObj.renderChunk
 
