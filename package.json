@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-jspacker",
-  "version": "1.0.1",
+  "version": "1.0.2-alpha.2",
   "description": "Rollup plugin to minify generated bundle (based on terser with checksum signature enhance)",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -11,7 +11,7 @@
   "scripts": {
     "test": "jest --passWithNoTests",
     "build": "rb -c",
-    "prepublish": "yarn test"
+    "prepare": "yarn test && yarn build"
   },
   "repository": "allex/rollup-plugin-jspacker",
   "keywords": [
