@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`works with code splitting 1`] = `
+Object {
+  "chunk-1.js": Object {
+    "code": "console.log(\\"chunk-1\\");
+",
+    "dynamicImports": Array [],
+    "exports": Array [],
+    "fileName": "chunk-1.js",
+    "imports": Array [],
+    "isDynamicEntry": false,
+    "isEntry": true,
+    "map": null,
+    "name": "chunk-1",
+    "type": "chunk",
+  },
+  "chunk-2.js": Object {
+    "code": "console.log(\\"chunk-2\\");
+",
+    "dynamicImports": Array [],
+    "exports": Array [],
+    "fileName": "chunk-2.js",
+    "imports": Array [],
+    "isDynamicEntry": false,
+    "isEntry": true,
+    "map": null,
+    "name": "chunk-2",
+    "type": "chunk",
+  },
+}
+`;

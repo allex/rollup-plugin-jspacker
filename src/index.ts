@@ -1,33 +1,13 @@
 import { md5 } from '@allex/md5'
-import { isPromise, merge } from '@fdio/utils'
 import { EOL } from 'os'
 import { Options as TerserOptions, terser } from 'rollup-plugin-terser'
 
-const stderr = console.error.bind(console) // eslint-disable-line no-console
+import { merge } from './util'
+
+const isPromise = (o: any) => o && typeof o.then === 'function'
 
 export interface MinifyOptions extends TerserOptions {
-}
-
-export const printMinifyError = (ex: any, code: string) => {
-  if (ex.name === 'SyntaxError') {
-    stderr(`Parse error at ${ex.filename}:${ex.line},${ex.col}`)
-    const lines = code.split(/\r?\n/)
-    let col = ex.col
-    let line = lines[ex.line - 1]
-    if (!line && !col) {
-      line = lines[ex.line - 2]
-      col = line.length
-    }
-    if (line) {
-      const limit = 70
-      if (col > limit) {
-        line = line.slice(col - limit)
-        col = limit
-      }
-      stderr(line.slice(0, 80))
-      stderr(line.slice(0, col).replace(/\S/g, ' ') + '^')
-    }
-  }
+  signature?: boolean
 }
 
 function commentsFilter (n, c) {
@@ -66,7 +46,6 @@ function genTerserOptions (o: TerserOptions) {
   return merge(
     {
       module: true,
-      ie8: true,
       compress: {
         drop_console: true,
         drop_debugger: true
@@ -87,9 +66,12 @@ function genTerserOptions (o: TerserOptions) {
  * @author Allex Wang (@allex_wang)
  */
 export const minify = function (options: MinifyOptions = {}) {
-  // cherry-pick options for terser plugin
-  const terserOptions = genTerserOptions(options)
-  const terserObj = terser(terserOptions)
+  options = { ...options }
+
+  const signature = options.signature || false
+  delete options.signature
+
+  const terserObj = terser(genTerserOptions(options))
   const renderChunk = terserObj.renderChunk
 
   // extends terser
@@ -98,9 +80,18 @@ export const minify = function (options: MinifyOptions = {}) {
 
     name: 'minify',
     renderChunk (code, chunk, outputOptions) {
-      let result = renderChunk(code, chunk, outputOptions)
+      let result = renderChunk.apply(this, arguments)
+      if (!result) {
+        return null
+      }
+
       if (!isPromise(result)) {
         result = Promise.resolve(result)
+      }
+
+      // return terser result w/o signature footer
+      if (!signature) {
+        return result
       }
 
       return result.then(({ code, map }) => {

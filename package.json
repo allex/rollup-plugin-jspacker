@@ -9,15 +9,18 @@
     "lib"
   ],
   "scripts": {
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --project . --fix",
     "test": "jest --passWithNoTests",
     "build": "rb -c",
-    "prepare": "yarn test && yarn build"
+    "prepare": "yarn lint && yarn build && yarn test"
   },
   "repository": "allex/rollup-plugin-jspacker",
   "keywords": [
     "rollup",
     "rollup-plugin",
     "terser",
+    "jspacker",
     "minify",
     "checksum"
   ],
@@ -25,14 +28,19 @@
   "license": "MIT",
   "dependencies": {
     "@allex/md5": "^1.0.4",
-    "@fdio/utils": "^1",
     "rollup-plugin-terser": "^5"
   },
   "devDependencies": {
     "@allex/typescript": "next",
+    "@babel/core": "^7.5.0",
+    "@babel/plugin-transform-async-to-generator": "^7.5.0",
     "babel-jest": "^24.8.0",
     "jest": "^24.8.0",
+    "rollup": ">=0.66.0 <2",
     "rollup-plugin-typescript2": "^0",
     "rollup-worker": "next"
+  },
+  "engines": {
+    "node" : ">=6.4.0"
   }
 }
