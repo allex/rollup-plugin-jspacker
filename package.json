@@ -38,7 +38,8 @@
     "jest": "^24.8.0",
     "rollup": ">=0.66.0 <2",
     "rollup-plugin-typescript2": "^0",
-    "rollup-worker": "next"
+    "rollup-worker": "next",
+    "tslint": "^5.12.1"
   },
   "engines": {
     "node" : ">=6.4.0"
