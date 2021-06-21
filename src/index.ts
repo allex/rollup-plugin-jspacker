@@ -54,11 +54,15 @@ function genTerserOptions (o: TerserOptions) {
     o,
     {
       output: {
+        indent_level: 2,
         comments: (comments && comments !== 'some') ? comments : commentsFilter
       }
     }
   )
 }
+
+const result = async (v: string | (() => string | Promise<string>)) =>
+  typeof v === 'function' ? await v() : v
 
 /**
  * Implements minify based on terser, enhancement add build signature with tag info (md5 checksum)
@@ -79,33 +83,33 @@ export const minify = function (options: MinifyOptions = {}) {
     ...terserObj,
 
     name: 'minify',
-    renderChunk (code, chunk, outputOptions) {
-      let result = renderChunk.apply(this, arguments)
-      if (!result) {
-        return null
-      }
+    async renderChunk (source, chunk, outputOptions) {
+      const output = await renderChunk.bind(this)(source, chunk, outputOptions)
 
-      if (!isPromise(result)) {
-        result = Promise.resolve(result)
+      if (!output) {
+        return null
       }
 
       // return terser result w/o signature footer
       if (!signature) {
-        return result
+        return output
       }
 
-      return result.then(({ code, map }) => {
-        // write minify file with banner and footer
-        let { banner = '', footer } = outputOptions
-        banner = banner.trim()
-        if (banner && code.substring(0, banner.length) !== banner) {
-          banner = banner.replace(/\r\n?|[\n\u2028\u2029]|\s*$/g, EOL)
-          code = banner + code
-        }
-        footer = (footer || `/* [hash] */`).replace(/\[hash\]/g, md5(code))
-        code = code + EOL + footer
-        return { code, map }
-      })
+      let { code, map } = output
+
+      // write minify file with banner and footer
+      let { banner, footer } = outputOptions
+      banner = await result(banner)
+      if (banner && code.substring(0, banner.length) !== banner) {
+        banner = banner.replace(/\r\n?|[\n\u2028\u2029]|\s*$/g, EOL)
+        code = banner + code
+      }
+
+      footer = await result(footer)
+      footer = (footer || `/* [hash] */`).replace(/\[hash\]/g, md5(code))
+      code = code + EOL + footer
+
+      return { code, map }
     }
   }
 }
