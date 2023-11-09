@@ -34,10 +34,6 @@ export default {
   destDir: resolve('lib'),
   dependencies: { events: true, ...dependencies },
   plugins: {
-    typescript: {
-      check: false,
-      typescript: require('@allex/typescript')
-    },
     globals ({ output }) {
       return ['es', 'cjs'].includes(output.format) ? {
         process: false,
@@ -50,8 +46,8 @@ export default {
       input: resolve('src/index.ts'),
       plugins,
       output: [
-        { format: 'es', file: 'index.esm.js', banner: banner(name, true) },
-        { format: 'cjs', file: 'index.js', minimize: false, banner: banner(name) },
+        { format: 'es', file: 'index.esm.js', compress: false, banner: banner(name, true) },
+        { format: 'cjs', file: 'index.js', banner: banner(name) },
       ]
     }
   ]

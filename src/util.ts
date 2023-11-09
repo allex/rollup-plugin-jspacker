@@ -2,7 +2,7 @@ export const isObject = <T> (o: T) => o && typeof o === 'object'
 export const isArray = Array.isArray
 export const isPromise = (o: any) => o && typeof o.then === 'function'
 
-export const merge = <T extends object = object> (r: T, ...objects: T[]): T {
+export const merge = <T extends Record<string, any>> (r: T, ...objects: any[]): T & any => {
   return objects.reduce((p, o) => {
     Object.keys(o).forEach(key => {
       const pVal = p[key]
@@ -18,3 +18,7 @@ export const merge = <T extends object = object> (r: T, ...objects: T[]): T {
     return p
   }, r || {})
 }
+
+export const result = async <T> (v: T | (() => T | Promise<T>)) =>
+  typeof v === 'function' ? await (v as Function)() : v as T
+

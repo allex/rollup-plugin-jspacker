@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "es6",
     "module": "esnext",
-    "lib": ["dom", "es6", "es2017"],
-    "importHelpers": true,
+    "lib": ["es6", "es2017"],
+    "importHelpers": false,
     "strict": true,
     "moduleResolution": "node",
     "declaration": true,
@@ -14,7 +14,7 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "diagnostics": true,
-    "listFiles": true,
+    "listFiles": false,
     "pretty": true,
     "noEmitOnError": false,
     "strictNullChecks": true,
@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "experimentalDecorators": true,
-    "removeComments": true
+    "removeComments": true,
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
   "include": [

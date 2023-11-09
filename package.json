@@ -1,7 +1,7 @@
 {
-  "name": "rollup-plugin-jspacker",
-  "version": "1.0.3",
-  "description": "Rollup plugin to minify generated bundle (based on terser with checksum signature enhance)",
+  "name": "rollup-plugin-minimize",
+  "version": "1.0.1",
+  "description": "A Rollup plugin to bundle with a minimize with checksum with md5 digest",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
@@ -12,36 +12,32 @@
     "lint": "tslint --project .",
     "lint:fix": "tslint --project . --fix",
     "test": "jest --passWithNoTests",
-    "build": "rb -c",
-    "prepare": "yarn lint && yarn build && yarn test"
+    "build": "rb -c"
   },
-  "repository": "allex/rollup-plugin-jspacker",
+  "repository": "allex/rollup-plugin-minimize",
   "keywords": [
     "rollup",
     "rollup-plugin",
-    "terser",
-    "jspacker",
-    "minify",
+    "minimize",
     "checksum"
   ],
   "author": "Allex Wang <allex.wxn@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@allex/md5": "^1.0.4",
-    "rollup-plugin-terser": "^5"
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@allex/typescript": "next",
-    "@babel/core": "^7.5.0",
-    "@babel/plugin-transform-async-to-generator": "^7.5.0",
-    "babel-jest": "^24.8.0",
-    "jest": "^24.8.0",
-    "rollup": ">=0.66.0 <2",
-    "rollup-plugin-typescript2": "^0",
-    "rollup-worker": "next",
-    "tslint": "^5.12.1"
+    "@babel/core": "^7",
+    "@babel/plugin-transform-async-to-generator": "^7",
+    "babel-jest": "^29",
+    "jest": "^29",
+    "rollup": "^2"
+  },
+  "peerDependencies": {
+    "rollup": "^2"
   },
   "engines": {
-    "node": ">=6.4.0"
+    "node": ">=16"
   }
 }
