@@ -1,6 +1,6 @@
 import { EOL } from 'os'
 import { md5 } from '@allex/md5'
-import { NormalizedOutputOptions, OutputPlugin, RenderedChunk } from 'rollup'
+import { NormalizedOutputOptions, OutputPlugin, PluginContext, PluginImpl, RenderChunkHook, RenderedChunk } from 'rollup'
 
 import { merge, result } from './util'
 
@@ -96,49 +96,50 @@ export function minimize (opts: PluginConfig) {
   }
 
   // extends terser
-  const pluginImpl = { ...plugin, name: 'minimize' }
-  const renderChunk = (plugin.renderChunk! as any).bind(pluginImpl)
+  return {
+    ...plugin,
+    name: 'minimize',
+    async renderChunk (
+      this: PluginContext,
+      source: string,
+      chunk: RenderedChunk,
+      outputOptions: NormalizedOutputOptions
+    ) {
+      const renderChunk: RenderChunkHook = plugin.renderChunk as any
+      const output = await renderChunk.apply(this, [source, chunk, outputOptions])
+      if (!output) {
+        return null
+      }
 
-  pluginImpl.renderChunk = async (
-    source: string,
-    chunk: RenderedChunk,
-    outputOptions: NormalizedOutputOptions
-  ) => {
-    const output = await renderChunk(source, chunk, outputOptions)
-    if (!output) {
-      return null
+      // return terser result w/o signature footer
+      if (disabled) {
+        return output
+      }
+
+      let code: string
+      let map = null
+
+      if (typeof output === 'string') {
+        code = output
+      } else {
+        map = output.map
+        code = output.code
+      }
+
+      // write minify file with banner and footer
+      const { banner, footer } = outputOptions
+
+      let str = await result(banner)
+      if (str && code.substring(0, str.length) !== str) {
+        str = str.replace(/\r\n?|[\n\u2028\u2029]|\s*$/g, EOL)
+        code = str + code
+      }
+
+      str = await result(footer)
+      str = (str || `/* [hash] */`).replace(/\[hash\]/g, md5(code))
+      code = code + EOL + str
+
+      return map ? { code, map } : code
     }
-
-    // return terser result w/o signature footer
-    if (disabled) {
-      return output
-    }
-
-    let code = output
-    let map = null
-    const withSoucemap = outputOptions.sourcemap
-    if (withSoucemap && output.map) {
-      code = output.code
-      map = output.map
-    }
-
-    // write minify file with banner and footer
-    const { banner, footer } = outputOptions
-
-    let str = await result(banner)
-    if (str && code.substring(0, str.length) !== str) {
-      str = str.replace(/\r\n?|[\n\u2028\u2029]|\s*$/g, EOL)
-      code = str + code
-    }
-
-    str = await result(footer)
-    str = (str || `/* [hash] */`).replace(/\[hash\]/g, md5(code))
-    code = code + EOL + str
-
-    return withSoucemap
-      ? { code, map }
-      : code
   }
-
-  return pluginImpl
 }
