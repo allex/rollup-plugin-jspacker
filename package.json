@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-minimize",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Rollup plugin to bundle with a minimize with checksum with md5 digest",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
